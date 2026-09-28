@@ -230,7 +230,7 @@ const deleteProperty = async (req , res) => {
          return res.status(400).json({msg : "You can only delete your owm Property"})
       }
 
-      await propertyModle.findByIdAndDelete(propertyId);
+      await PropertyModel.findByIdAndDelete(propertyId);
       return res.status(200).json({msg : "Property deleted Successfully"})
 
     }
@@ -261,9 +261,91 @@ const getAllProperty = async (req , res) => {
     try{
       let {search , categoryId , location , minPrice , maxPrice , status , page = 1 , limit = 5}= req.query;
       
+      page = Number(page);
+      limit = Number(limit);
+      
+     // page Validation 
+     if(page < 1){
+      return res.status(400).json({msg : "Page must be greater than Zero"});
+     }
+     // limit Validation
+    if(limit < 5 || limit > 20){
+      return res.status(400).json({msg : "Limit must be brtween 5 to 20"});
+    }
+     
+    let filter = {};
+
+    // Search by title or location
+    if(search){
+      // here we create a filter array whatever condition is true it save in filter 
+      filter.$or = [
+         {title : {$regex: search , $options: "i"}},
+         {location : {$regex: search , $options: "i"}},
+      ]
+    }
+
+    // Filter Category
+    if(categoryId){
+      if(!isValidObjectId(categoryId)){
+         return res.status(400).json({msg : "Invaid Category Id"});
+      }
+      // here we create a key in filter and save our categoryId
+      filter.categoryId = categoryId;
+    }
 
 
+   // Filter By Location
+    if(location){
+      // we use $regex bcz it help us to find in database 
+      filter.location = {$regex : location , $options : "i"}
+    }
 
+    // Filter by Price 
+    if(minPrice || maxPrice){
+       filter.price = {};
+       if(minPrice){
+         if(isNaN(minPrice) || Number(minPrice) < 0){
+            return res.status(400).json({msg : "Invalid Min Price"})
+         }
+         filter.price.$gte = minPrice;
+       }
+       if(maxPrice){
+          if(isNaN(maxPrice) || Number(maxPrice) < 0){
+            return res.status(400).json({msg : "Invalid Max Price"})
+         }
+         filter.price.$lte = maxPrice;
+       }
+    }
+
+    // Status filter
+    if(status){
+      if(!["available" , "rented" , "inactive"].includes(status)){
+         return res.status(400).json({msg : "Invalid Status"});
+      }
+      filter.status = status;
+    }
+
+    // total Properties 
+    let totalProperties = await PropertyModel.countDocuments(filter);
+
+    // Skip(help us to skip item of previous page so it not appear again in second page)
+    let skip = (page - 1) * limit;
+
+    let properties = await PropertyModel.find(filter)
+    .populate("categoryId")
+    .populate("ownerId")
+    .sort({createdAt: -1})
+    .skip(skip)
+    .limit(limit);
+
+    if(properties.length == 0){
+      return res.status(400).json({msg : "No Data found"});
+    }
+
+    let totalPages = Math.ceil(totalProperties/limit);
+    return res.status(200)
+   .json({ msg :"Property find successfully" ,page , limit , totalPages , totalProperties,properties });
+   
     }
     catch(error){
        console.log(error);
@@ -279,11 +361,11 @@ const getPropertyById = async (req , res) => {
       if(!isValidObjectId(propertyId)){
         return res.status(400).json({msg : "InValid Property Id"});  
       }
-      let property = await PropertyModel.findById(propertyId).populate("categoryId").populate("ownwerId" , "-password");
+      let property = await PropertyModel.findById(propertyId).populate("categoryId").populate("ownerId" , "-password");
       if(!property){
        return res.status(404).json({msg : "Property Not Found "})
       }
-      return res.status(200).json({msg : "Property fetched Successfully"})
+      return res.status(200).json({msg : "Property fetched Successfully" , property})
     }
     catch(error){
        console.log(error);
