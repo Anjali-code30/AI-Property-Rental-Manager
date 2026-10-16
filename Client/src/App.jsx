@@ -1,122 +1,87 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { Routes, Route } from "react-router-dom";
+import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Signup";
 
-function App() {
-  const [count, setCount] = useState(0)
 
+import ProtectedRoute from "./routes/ProtectedRoute";
+import UserRoute from "./routes/UserRoute";
+import OwnerRoute from "./routes/OwnerRoute";
+import AdminRoute from "./routes/AdminRoute";
+
+
+
+import UserDashboard from "./pages/user/Dashboard";
+import MyRequests from "./pages/user/MyRequests";
+import Properties from "./pages/user/Properties";
+import PropertyDetails from "./pages/user/PropertyDetails"
+import Recommended from "./pages/user/Recommended";
+
+import OwnerDashboard from "./pages/owner/OwnerDashboard";
+ import MyProperties from "./pages/owner/MyProperties";
+import PropertyForm from "./pages/owner/PropertyForm";
+import Requests from "./pages/owner/Requests";
+
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminUsers from "./pages/admin/Users";
+import AdminProperties from "./pages/admin/Properties";
+import Analytics from "./pages/admin/Analytics";
+import AdminCategories from "./pages/admin/Categories";
+
+
+import Profile from "./pages/shared/profile";
+
+const App = () => {
   return (
     <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
 
-      <div className="ticks"></div>
+    <Routes>
+      <Route path="/" element={<Login/>} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+      <Route element ={<ProtectedRoute/>}>
+      {/* User Routes */}
+         <Route element = {<UserRoute/>}>
+           <Route path="/user/dashboard" element={<UserDashboard />}></Route>
+           <Route path="/user/requests" element={<MyRequests />} />
+            <Route path="/user/properties" element={<Properties />} />
+            <Route path="/user/properties/:id" element={<PropertyDetails />} />
+            <Route path="/user/recommended" element={<Recommended />} />
+            
+            <Route path="/user/profile" element={<Profile />} />
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
+         </Route>
+
+          {/* Owner Routes */}
+          <Route element={<OwnerRoute />}>
+            <Route path="/owner-dashboard" element={<OwnerDashboard />} />
+            <Route path="/owner/properties" element={<MyProperties />} />
+            <Route path="/owner/properties/add" element={<PropertyForm />} />
+            <Route
+              path="/owner/properties/edit/:id"
+              element={<PropertyForm />}
+            />
+            <Route path="/owner/requests" element={<Requests />} />
+           
+            <Route path="/owner/profile" element={<Profile />} />
+
+          </Route>
+
+           {/* Admin Routes */}
+          <Route element={<AdminRoute />}>
+            <Route path="/admin-dashboard" element={<AdminDashboard/>} />
+            <Route path="/admin/users" element={<AdminUsers />} />
+            <Route path="/admin/properties" element={<AdminProperties />} />
+            <Route path="/admin/analytics" element={<Analytics />} />
+            <Route path="/admin/categories" element={<AdminCategories />} />
+            
+            <Route path="/admin/profile" element={<Profile />} />
+
+          </Route>
+      </Route> 
+    </Routes>
     </>
-  )
-}
+  );
+};
 
-export default App
+export default App;

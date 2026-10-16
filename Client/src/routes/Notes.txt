@@ -1,0 +1,8 @@
+ <Navigate/> :  component is a declarative way to redirect user to a differnt url path whenever it gets rendered*/}
+ example : it most frequently use in protecting route checking if a user is logged in.if user tries to
+ access a private route without authentication.so you can return a <Navigate to = "/login"/> component to froce
+ them back to login page.
+
+ <Outlet/> component acts as a dynamic placeholder or viewport for nested child routes
+example : The main layout . The header and footer stay the same , while the <Outlet/>  acts a 
+window that changes the content based on the Url.

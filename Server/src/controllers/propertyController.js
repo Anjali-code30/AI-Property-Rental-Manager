@@ -1,6 +1,7 @@
 const PropertyModel = require("../models/PropertyModel");
 const categoryModel = require("../models/categoryModel");
 
+
 const {isValid , isValidObjectId} = require("../utils/validator");
 
 // Add Property (Owner)
@@ -165,7 +166,7 @@ const updateProperty = async (req , res) => {
      }
 
     if(bedRooms !== undefined){
-      if(isValid(bedRooms)){
+      if(!isValid(bedRooms)){
          return res.status(400).json({msg : "Please Enter The BedRooms"})
       }
       if(Number(bedRooms) < 0 ){
@@ -174,7 +175,7 @@ const updateProperty = async (req , res) => {
     }
 
     if(bathRooms !== undefined){
-       if(isValid(bedRooms)){
+       if(!isValid(bedRooms)){
          return res.status(400).json({msg : "Please Enter The BathRooms"})
       }
       if(Number(bedRooms) < 0 ){
@@ -183,7 +184,7 @@ const updateProperty = async (req , res) => {
     }
 
     if(area !== undefined){
-       if(isValid(area)){
+       if(!isValid(area)){
          return res.status(400).json({msg : "Please Enter the Area"})
       }
       if(Number(bedRooms) < 0 ){
@@ -199,7 +200,10 @@ const updateProperty = async (req , res) => {
     }
 
     if(req.files && req.files.length > 0){
-      propertyData.image = req.files.map((file) => file.filename);
+      propertyData.images = req.files.map((file) => file.filename);
+   
+    propertyData.images = [...(property.images || []), ...newImages];
+    
     }
 
     let updateProperty = await PropertyModel.findByIdAndUpdate(propertyId , propertyData , {new : true}).populate("categoryId");
@@ -269,7 +273,7 @@ const getAllProperty = async (req , res) => {
       return res.status(400).json({msg : "Page must be greater than Zero"});
      }
      // limit Validation
-    if(limit < 5 || limit > 20){
+    if(limit < 1 || limit > 20){
       return res.status(400).json({msg : "Limit must be brtween 5 to 20"});
     }
      
@@ -344,7 +348,7 @@ const getAllProperty = async (req , res) => {
 
     let totalPages = Math.ceil(totalProperties/limit);
     return res.status(200)
-   .json({ msg :"Property find successfully" ,page , limit , totalPages , totalProperties,properties });
+   .json({ msg :"Property find successfully" ,page , limit , totalPages , totalProperties, properties });
    
     }
     catch(error){

@@ -21,7 +21,7 @@ const addCategory = async (req , res) => {
         if(!isValidCategoryName(categoryName)){
           return res.status(400).json({msg : "Invalid Category Name"})
         }
-        let duplicateCategory = await CategoryModel.findOne({categoryName , });
+        let duplicateCategory = await categoryModel.findOne({categoryName , });
 
         if(duplicateCategory){
             return res.status(400).json({msg : "Category Name is Already exists"})
@@ -42,7 +42,7 @@ const addCategory = async (req , res) => {
         }
        }
 
-       let category = await CategoryModel.create(categoryData);
+       let category = await categoryModel.create(categoryData);
        return res.status(201).json({msg : "Category Crated SuccessFully" , category})
 
         
@@ -55,7 +55,7 @@ const addCategory = async (req , res) => {
 // Get All Category
 const getAll = async (req , res)  => {
     try {
-        let categories = await CategoryModel.find();
+        let categories = await categoryModel.find();
         if(categories.length === 0){
             return res.status(400).json({msg : "Categories Not Found"})
         }

@@ -81,9 +81,9 @@ const signup = async (req, res) => {
         }
 
         // bio Validation
-        if (bio !== undefined) {
-            if (bio.length < 15) {
-                return res.status(400).json({ msg: "bio must be 15 characters long" });
+        if (bio !== undefined && bio.trim() !== "") {
+            if (bio.trim().length < 15  && bio.trim().length > 200) {
+                return res.status(400).json({ msg: "bio cannot be less than 15 characters " });
             }
         }
 
@@ -116,6 +116,7 @@ const login = async (req, res) => {
 
         let { email, password } = userData;
 
+
         if (!isValid(email)) {
             return res.status(400).json({ msg: "Email is required" });
 
@@ -143,8 +144,7 @@ const login = async (req, res) => {
             },
             process.env.JWT_SECRET_KEY,
             { expiresIn: "3d" },
-        );
-
+        );         
         return res.status(200).json({
             msg: "Login Successfully", token,
             user: {
@@ -154,7 +154,7 @@ const login = async (req, res) => {
                 phone: user.phone,
                 role: user.role,
             }
-        })
+        });
 
     } catch (error) {
         console.log(error);
@@ -214,7 +214,7 @@ const updateMyProfile = async (req, res) => {
                 return res.status(400).json({ msg: "Invalid Email " })
             }
 
-            let duplicateEmail = await userModel.findOne({ email, _id: { $ne: userid } });
+            let duplicateEmail = await userModel.findOne({ email, _id: { $ne: userId } });
             if (duplicateEmail) {
                 return res.status(400).json({ msg: "Email Already Exists" })
             }
@@ -296,7 +296,6 @@ const deleteProfile = async (req, res) => {
 };
 
 // Get All  (Adimin)
-
 const getAllUsers = async (req, res) => {
     try {
         let { role } = req.query;

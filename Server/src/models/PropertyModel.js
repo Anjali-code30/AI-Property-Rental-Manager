@@ -42,9 +42,9 @@ const propertySchema = new mongoose.Schema({
         type: Number,
         required:true,
     },
-    image: {
+    images:[{
         type: String,
-    },
+    }],
     status:{
         type: String,
         enum : ["available" , "rented" , "inactive"],

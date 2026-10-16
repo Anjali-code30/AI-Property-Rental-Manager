@@ -15,9 +15,6 @@ router.delete("/delete", authentication, deleteProfile);
 router.get("/getAll", authentication, authorization("admin"), getAllUsers);
 router.delete("/deleteAny/:id", authentication, authorization("admin"), deleteAny);
 
-
-
-
 module.exports = router;
 
 
